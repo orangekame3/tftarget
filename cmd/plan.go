@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"os/exec"
 
@@ -28,7 +27,7 @@ var planCmd = &cobra.Command{
 		resources := ExtractResourceNames(out)
 		selectedResources := make([]string, 0)
 		prompt := &survey.MultiSelect{
-			Message: "Select resources to apply:",
+			Message: "Select resources to target plan:",
 			Options: resources,
 		}
 		survey.AskOne(prompt, &selectedResources, survey.WithPageSize(25))
@@ -40,7 +39,6 @@ var planCmd = &cobra.Command{
 		buffer.WriteString(" -target=")
 		buffer.WriteString(targets)
 		planCmd := exec.Command("sh", "-c", buffer.String())
-		fmt.Println("Running command:", planCmd.String())
 		planCmd.Stdout = os.Stdout
 		planCmd.Stderr = os.Stderr
 		return planCmd.Run()

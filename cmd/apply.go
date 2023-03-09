@@ -30,7 +30,7 @@ var applyCmd = &cobra.Command{
 		resources := ExtractResourceNames(out)
 		selectedResources := make([]string, 0)
 		prompt := &survey.MultiSelect{
-			Message: "Select resources to apply:",
+			Message: "Select resources to target apply:",
 			Options: resources,
 		}
 		survey.AskOne(prompt, &selectedResources, survey.WithPageSize(25))
@@ -42,7 +42,6 @@ var applyCmd = &cobra.Command{
 		buffer.WriteString(" -target=")
 		buffer.WriteString(targets)
 		applyCmd := exec.Command("sh", "-c", buffer.String())
-		fmt.Println("Running command:", applyCmd.String())
 		applyCmd.Stdout = os.Stdout
 		applyCmd.Stderr = os.Stderr
 		applyCmd.Run()
