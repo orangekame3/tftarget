@@ -23,28 +23,28 @@ The tftarget invokes the Terraform command, so Terraform must be installed on th
 We have prepared a sandbox environment where Terraform can be run in a Docker environment, so please clone the repository and try it out.
 
 ```shell
-git clone https://github.com/orangekame3/tftarget.git
+$git clone https://github.com/orangekame3/tftarget.git
 ```
 
 Please navigate to the 'sandbox' directory.
 
 ```shell
-cd tftarget/sandbox
+$cd tftarget/sandbox
 ```
 
 
 Please run the compose.yml file.
 
 ```shell
-docker compose -f compose.yml up -d localstack
+$docker compose -f compose.yml up -d localstack
 ```
 
 Now that localstack has started, you should be able to run Terraform.  
 Please run the following command to confirm that Terraform is functioning properly.
 
 ```
-terraform init
-terraform plan
+$terraform init
+$terraform plan
 ```
 
 Once you have reached this point, the preparation is complete.
@@ -54,7 +54,7 @@ Once you have reached this point, the preparation is complete.
 ### GO
 
 ```shell
-go install github.com/orangekame3/tftarget@latest
+$go install github.com/orangekame3/tftarget@latest
 ```
 
 ### Download
@@ -66,22 +66,18 @@ https://github.com/orangekame3/tftarget/releases
 ## Usage
 
 ```
-tftarget --help                                                          ✔
-A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.
+$tftarget --help
+tftarget is a CLI library for Terraform plan/apply with target option.
+You can interactivity select resource to plan/appply with target option.
 
 Usage:
   tftarget [command]
 
 Available Commands:
-  apply       Create a Terraform apply
+  apply       Terraform apply, interactively select resource to apply with target option
   completion  Generate the autocompletion script for the specified shell
   help        Help about any command
-  plan        Create a Terraform plan
+  plan        Terraform plan, interactively select resource to plan with target option
 
 Flags:
   -h, --help      help for tftarget
@@ -91,6 +87,5 @@ Flags:
 Use "tftarget [command] --help" for more information about a command.
 ```
 
-
-
-
+## License
+MIT

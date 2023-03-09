@@ -23,8 +23,8 @@ import (
 // applyCmd represents the apply command
 var applyCmd = &cobra.Command{
 	Use:   "apply",
-	Short: "Create a Terraform apply",
-	Long:  `Create a Terraform apply and display the result.`,
+	Short: "Terraform apply, interactively select resource to apply with target option",
+	Long:  "Terraform apply, interactively select resource to apply with target option",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		out, err := exec.Command("terraform", "plan", "-no-color").CombinedOutput()
 		if err != nil {

@@ -20,8 +20,8 @@ import (
 // planCmd represents the plan command
 var planCmd = &cobra.Command{
 	Use:   "plan",
-	Short: "Create a Terraform plan",
-	Long:  `Create a Terraform plan and display the result.`,
+	Short: "Terraform plan, interactively select resource to plan with target option",
+	Long:  "Terraform plan, interactively select resource to plan with target option",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		out, err := exec.Command("terraform", "plan", "-no-color").CombinedOutput()
 		if err != nil {
