@@ -1,4 +1,4 @@
-module github/tftarget
+module github.com/orangekame3/tftarget
 
 go 1.20
 
