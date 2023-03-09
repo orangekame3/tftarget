@@ -7,14 +7,12 @@ before:
     # you may remove this if you don't need go generate
     - go generate ./...
 builds:
-  - ldflags: "-X main.version={{.Version}} -X main.buildID={{.Env.BUILD_ID}}"
   - env:
       - CGO_ENABLED=0
-      - BUILD_ID=$GORELEASER_CURRENT_TAG
     goos:
       - linux
-      # - windows
-      # - darwin
+      - windows
+      - darwin
 
 archives:
   - format: tar.gz
