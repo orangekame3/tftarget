@@ -10,8 +10,10 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/briandowns/spinner"
 	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 )
@@ -42,10 +44,13 @@ var applyCmd = &cobra.Command{
 		buffer.WriteString(" -target=")
 		buffer.WriteString(targets)
 		applyCmd := exec.Command("sh", "-c", buffer.String())
-		applyCmd.Stdout = os.Stdout
+		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond) // Build our new spinner
+		s.Color("green")
+		s.Start()
 		//applyCmd.Stderr = os.Stderr
+		applyCmd.Stdout = os.Stdout
 		applyCmd.Run()
-
+		s.Stop()
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Do you want to perform these actions? ")
 		text, _ := reader.ReadString('\n')

@@ -7,8 +7,10 @@ import (
 	"bytes"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/briandowns/spinner"
 	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 )
@@ -39,9 +41,16 @@ var planCmd = &cobra.Command{
 		buffer.WriteString(" -target=")
 		buffer.WriteString(targets)
 		planCmd := exec.Command("sh", "-c", buffer.String())
+		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond) // Build our new spinner
+		s.Color("green")
+		s.Start()
 		planCmd.Stdout = os.Stdout
 		planCmd.Stderr = os.Stderr
-		return planCmd.Run()
+		if err := planCmd.Run(); err != nil {
+			return err
+		}
+		s.Stop()
+		return nil
 	},
 }
 
