@@ -1,5 +1,7 @@
 # Changelog
 
+## [v0.0.4](https://github.com/orangekame3/tftarget/compare/v0.0.3...v0.0.4) - 2023-03-09
+
 ## [v0.0.3](https://github.com/orangekame3/tftarget/compare/v0.0.2...v0.0.3) - 2023-03-09
 ### Other Changes
 - Release for v0.0.1 by @github-actions in https://github.com/orangekame3/tftarget/pull/2
