@@ -5,11 +5,13 @@ package cmd
 
 import (
 	"bytes"
+	"log"
 	"os"
 	"os/exec"
 	"time"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/briandowns/spinner"
 	"github.com/gookit/color"
 	"github.com/spf13/cobra"
@@ -32,7 +34,11 @@ var planCmd = &cobra.Command{
 			Message: "Select resources to target plan:",
 			Options: resources,
 		}
-		survey.AskOne(prompt, &selectedResources, survey.WithPageSize(25))
+		if err := survey.AskOne(prompt, &selectedResources, survey.WithPageSize(25)); err != nil {
+			if err == terminal.InterruptErr {
+				log.Fatal("interrupted")
+			}
+		}
 		targets := SliceToString(DropAction(selectedResources))
 
 		var buffer bytes.Buffer

@@ -7,12 +7,14 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/briandowns/spinner"
 	"github.com/gookit/color"
 	"github.com/spf13/cobra"
@@ -35,7 +37,11 @@ var applyCmd = &cobra.Command{
 			Message: "Select resources to target apply:",
 			Options: resources,
 		}
-		survey.AskOne(prompt, &selectedResources, survey.WithPageSize(25))
+		if err := survey.AskOne(prompt, &selectedResources, survey.WithPageSize(25)); err != nil {
+			if err == terminal.InterruptErr {
+				log.Fatal("interrupted")
+			}
+		}
 		targets := SliceToString(DropAction(selectedResources))
 
 		var buffer bytes.Buffer
