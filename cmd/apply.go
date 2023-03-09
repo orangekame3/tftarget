@@ -43,7 +43,7 @@ var applyCmd = &cobra.Command{
 		buffer.WriteString(targets)
 		applyCmd := exec.Command("sh", "-c", buffer.String())
 		applyCmd.Stdout = os.Stdout
-		applyCmd.Stderr = os.Stderr
+		//applyCmd.Stderr = os.Stderr
 		applyCmd.Run()
 
 		reader := bufio.NewReader(os.Stdin)
