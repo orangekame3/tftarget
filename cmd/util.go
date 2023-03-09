@@ -18,7 +18,7 @@ func ExtractResourceNames(input []byte) []string {
 
 	return results
 }
-func dropAction(strs []string) []string {
+func DropAction(strs []string) []string {
 	var result []string
 	for _, s := range strs {
 		s = strings.TrimSpace(s)

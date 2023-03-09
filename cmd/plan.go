@@ -10,6 +10,7 @@ import (
 	"os/exec"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 )
 
@@ -21,6 +22,7 @@ var planCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		out, err := exec.Command("terraform", "plan", "-no-color").CombinedOutput()
 		if err != nil {
+			color.Red.Println(string(out))
 			return err
 		}
 		resources := ExtractResourceNames(out)
@@ -30,7 +32,7 @@ var planCmd = &cobra.Command{
 			Options: resources,
 		}
 		survey.AskOne(prompt, &selectedResources, survey.WithPageSize(25))
-		targets := SliceToString(dropAction(selectedResources))
+		targets := SliceToString(DropAction(selectedResources))
 
 		var buffer bytes.Buffer
 		buffer.WriteString("terraform")
