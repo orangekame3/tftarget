@@ -7,7 +7,7 @@ before:
     # you may remove this if you don't need go generate
     - go generate ./...
 builds:
-  - ldflags: "-X 'main.version={{.Version}}'"
+  - ldflags: "-X main.buildID=$(date +%Y%m%d%H%M%S)"
   - env:
       - CGO_ENABLED=0
     goos:
