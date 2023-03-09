@@ -1,13 +1,15 @@
-# .github/workflows/tagpr.yml
 name: tagpr
 on:
   push:
-    branches: ["main"]
+    branches:
+    - main
 jobs:
-  deploy:
+  tagpr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: Songmu/tagpr@main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GH_PAT }}
+    - uses: Songmu/tagpr@main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
