@@ -67,7 +67,7 @@ https://github.com/orangekame3/tftarget/releases
 
 ```shell
 $ tftarget --help
-tftarget is a CLI library for Terraform plan/apply with target option.
+tftarget is a CLI tool for Terraform plan/apply with target option.
 You can interactivity select resource to plan/appply with target option.
 
 Usage:
