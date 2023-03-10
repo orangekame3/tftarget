@@ -8,10 +8,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"time"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/briandowns/spinner"
 	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slices"
@@ -23,23 +21,14 @@ var destroyCmd = &cobra.Command{
 	Short: "Terraform destroy, interactively select resource to destroy with target option",
 	Long:  "Terraform destroy, interactively select resource to destroy with target option",
 	RunE: func(cmd *cobra.Command, args []string) error {
-
-		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
-		s.Suffix = " loading ..."
-		s.Color("green")
-		s.Start()
 		options, err := ExecutePlan()
 		if err != nil {
 			return fmt.Errorf("plan :%w", err)
 		}
-		s.Stop()
+		S.Stop()
 
 		selectedResources := make([]string, 0, 100)
-		prompt := &survey.MultiSelect{
-			Message: "Select resources to target destroy:",
-			Options: options,
-		}
-		if err := survey.AskOne(prompt, &selectedResources, survey.WithPageSize(25)); err != nil {
+		if err := survey.AskOne(&survey.MultiSelect{Message: "Select resources to target destroy:", Options: options}, &selectedResources, survey.WithPageSize(25)); err != nil {
 			return fmt.Errorf("select resource :%w", err)
 		}
 		if len(selectedResources) == 0 {
@@ -50,13 +39,12 @@ var destroyCmd = &cobra.Command{
 			color.Green.Println("exit seleced")
 			return nil
 		}
-		targets := SliceToString(DropAction(selectedResources))
-		buf := TargetCommand("destroy", targets)
+		buf := TargetCommand("destroy", SliceToString(DropAction(selectedResources)))
 		destroyCmd := exec.Command("sh", "-c", buf.String())
-		s.Restart()
+		S.Restart()
 		destroyCmd.Stdout = os.Stdout
 		destroyCmd.Run()
-		s.Stop()
+		S.Stop()
 		if IsYes(bufio.NewReader(os.Stdin)) {
 			return Confirm(buf).Run()
 		}

@@ -7,10 +7,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"time"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/briandowns/spinner"
 	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slices"
@@ -22,23 +20,14 @@ var planCmd = &cobra.Command{
 	Short: "Terraform plan, interactively select resource to plan with target option",
 	Long:  "Terraform plan, interactively select resource to plan with target option",
 	RunE: func(cmd *cobra.Command, args []string) error {
-
-		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
-		s.Suffix = " loading ..."
-		s.Color("green")
-		s.Start()
 		options, err := ExecutePlan()
 		if err != nil {
 			return fmt.Errorf("plan :%w", err)
 		}
-		s.Stop()
+		S.Stop()
 
 		selectedResources := make([]string, 0, 100)
-		prompt := &survey.MultiSelect{
-			Message: "Select resources to target plan:",
-			Options: options,
-		}
-		if err := survey.AskOne(prompt, &selectedResources, survey.WithPageSize(25)); err != nil {
+		if err := survey.AskOne(&survey.MultiSelect{Message: "Select resources to target destroy:", Options: options}, &selectedResources, survey.WithPageSize(25)); err != nil {
 			return fmt.Errorf("select resource :%w", err)
 		}
 		if len(selectedResources) == 0 {
@@ -49,16 +38,14 @@ var planCmd = &cobra.Command{
 			color.Green.Println("exit seleced")
 			return nil
 		}
-		targets := SliceToString(DropAction(selectedResources))
-		buf := TargetCommand("plan", targets)
+		buf := TargetCommand("plan", SliceToString(DropAction(selectedResources)))
 		planCmd := exec.Command("sh", "-c", buf.String())
-		s.Restart()
+		S.Restart()
 		planCmd.Stdout = os.Stdout
-		planCmd.Stderr = os.Stderr
 		if err := planCmd.Run(); err != nil {
 			return fmt.Errorf("target plan :%w", err)
 		}
-		s.Stop()
+		S.Stop()
 		return nil
 	},
 }
