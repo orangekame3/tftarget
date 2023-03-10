@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 	"time"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -24,23 +23,21 @@ var applyCmd = &cobra.Command{
 	Short: "Terraform apply, interactively select resource to apply with target option",
 	Long:  "Terraform apply, interactively select resource to apply with target option",
 	RunE: func(cmd *cobra.Command, args []string) error {
+
 		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
 		s.Suffix = " loading ..."
 		s.Color("green")
 		s.Start()
-		out, err := exec.Command("terraform", "plan", "-no-color").CombinedOutput()
+		options, err := ExecutePlan()
 		if err != nil {
-			color.Red.Println(string(out))
 			return fmt.Errorf("plan :%w", err)
 		}
-		resources := make([]string, 0, 100)
-		resources = append(resources, color.Red.Sprintf("%s", "exit (cancel terraform plan)"))
-		resources = append(resources, ExtractResourceNames(out)...)
-		selectedResources := make([]string, 0)
 		s.Stop()
+
+		selectedResources := make([]string, 0, 100)
 		prompt := &survey.MultiSelect{
 			Message: "Select resources to target apply:",
-			Options: resources,
+			Options: options,
 		}
 		if err := survey.AskOne(prompt, &selectedResources, survey.WithPageSize(25)); err != nil {
 			return fmt.Errorf("select resource :%w", err)
@@ -60,18 +57,11 @@ var applyCmd = &cobra.Command{
 		applyCmd.Stdout = os.Stdout
 		applyCmd.Run()
 		s.Stop()
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Do you want to perform these actions? ")
-		text, _ := reader.ReadString('\n')
-		text = strings.TrimSpace(text)
-		if text != "yes" {
-			return nil
+		if IsYes(bufio.NewReader(os.Stdin)) {
+			return Confirm(buf).Run()
 		}
-		buf.WriteString(" -auto-approve")
-		confirm := exec.Command("sh", "-c", buf.String())
-		confirm.Stdout = os.Stdout
-		confirm.Stderr = os.Stderr
-		return confirm.Run()
+		color.Green.Println("apply did not executed")
+		return nil
 	},
 }
 

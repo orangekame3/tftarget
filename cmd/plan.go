@@ -22,23 +22,21 @@ var planCmd = &cobra.Command{
 	Short: "Terraform plan, interactively select resource to plan with target option",
 	Long:  "Terraform plan, interactively select resource to plan with target option",
 	RunE: func(cmd *cobra.Command, args []string) error {
+
 		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
 		s.Suffix = " loading ..."
 		s.Color("green")
 		s.Start()
-		out, err := exec.Command("terraform", "plan", "-no-color").CombinedOutput()
+		options, err := ExecutePlan()
 		if err != nil {
-			color.Red.Println(string(out))
 			return fmt.Errorf("plan :%w", err)
 		}
-		resources := make([]string, 0, 100)
-		resources = append(resources, color.Red.Sprintf("%s", "exit (cancel terraform plan)"))
-		resources = append(resources, ExtractResourceNames(out)...)
-		selectedResources := make([]string, 0)
 		s.Stop()
+
+		selectedResources := make([]string, 0, 100)
 		prompt := &survey.MultiSelect{
 			Message: "Select resources to target plan:",
-			Options: resources,
+			Options: options,
 		}
 		if err := survey.AskOne(prompt, &selectedResources, survey.WithPageSize(25)); err != nil {
 			return fmt.Errorf("select resource :%w", err)
