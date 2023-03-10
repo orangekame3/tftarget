@@ -1,5 +1,7 @@
 # Changelog
 
+## [v0.0.20](https://github.com/orangekame3/tftarget/compare/v0.0.19...v0.0.20) - 2023-03-10
+
 ## [v0.0.19](https://github.com/orangekame3/tftarget/compare/v0.0.18...v0.0.19) - 2023-03-10
 
 ## [v0.0.18](https://github.com/orangekame3/tftarget/compare/v0.0.17...v0.0.18) - 2023-03-10
