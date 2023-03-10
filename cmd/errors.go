@@ -1,3 +1,6 @@
+/*
+Copyright © 2023 orangekame3 <miya.org.0309@gmai.com>
+*/
 package cmd
 
 import "errors"

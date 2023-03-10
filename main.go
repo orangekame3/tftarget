@@ -1,5 +1,5 @@
 /*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+Copyright © 2023 orangekame3 <miya.org.0309@gmai.com>
 */
 package main
 

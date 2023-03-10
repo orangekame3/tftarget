@@ -1,5 +1,5 @@
 /*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+Copyright © 2023 orangekame3 <miya.org.0309@gmai.com>
 */
 package cmd
 
@@ -19,9 +19,6 @@ var rootCmd = &cobra.Command{
 	Long: `tftarget is a CLI library for Terraform plan/apply with target option.
 You can interactivity select resource to plan/appply with target option.
 `,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
 }
 
 var S = spinner.New(spinner.CharSets[14], 100*time.Millisecond)
@@ -39,14 +36,6 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.tftarget.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
