@@ -52,7 +52,7 @@ func SliceToString(slice []string) string {
 	return buffer.String()
 }
 
-func TargetCommand(cmd, target string) bytes.Buffer {
+func GenTargetCmd(cmd, target string) bytes.Buffer {
 	var buf bytes.Buffer
 	buf.WriteString("terraform ")
 	buf.WriteString(cmd)
@@ -74,8 +74,12 @@ func Confirm(buf bytes.Buffer) *exec.Cmd {
 	return confirm
 }
 
-func ExecutePlan() ([]string, error) {
-	out, err := exec.Command("terraform", "plan", "-no-color").CombinedOutput()
+func ExecutePlan(option string) ([]string, error) {
+	planCmd := exec.Command("terraform", "plan", "-no-color")
+	if option != "" {
+		planCmd = exec.Command("terraform", "plan", option, "-no-color")
+	}
+	out, err := planCmd.CombinedOutput()
 	if err != nil {
 		color.Red.Println(string(out))
 		return nil, err
@@ -83,9 +87,15 @@ func ExecutePlan() ([]string, error) {
 	resources := ExtractResourceNames(out)
 	if len(resources) == 0 {
 		color.Green.Println(string(out))
-		return nil, nil
+		return nil, ErrNotFound
 	}
 	options := make([]string, 0, 100)
 	options = append(options, color.Red.Sprintf("%s", "exit (cancel terraform plan)"))
 	return append(options, resources...), nil
+}
+
+func TargetCmd(buf bytes.Buffer) *exec.Cmd {
+	cmd := exec.Command("sh", "-c", buf.String())
+	cmd.Stdout = os.Stdout
+	return cmd
 }

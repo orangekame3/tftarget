@@ -7,7 +7,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"os/exec"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/gookit/color"
@@ -21,29 +20,30 @@ var destroyCmd = &cobra.Command{
 	Short: "Terraform destroy, interactively select resource to destroy with target option",
 	Long:  "Terraform destroy, interactively select resource to destroy with target option",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		options, err := ExecutePlan()
-		if err != nil {
+		options, err := ExecutePlan("-destroy")
+		if err != nil && !IsNotFound(err) {
 			return fmt.Errorf("plan :%w", err)
+		}
+		if IsNotFound(err) {
+			return nil
 		}
 		S.Stop()
 
-		selectedResources := make([]string, 0, 100)
-		if err := survey.AskOne(&survey.MultiSelect{Message: "Select resources to target destroy:", Options: options}, &selectedResources, survey.WithPageSize(25)); err != nil {
+		selected := make([]string, 0, 100)
+		if err := survey.AskOne(&survey.MultiSelect{Message: "Select resources to target destroy:", Options: options}, &selected, survey.WithPageSize(25)); err != nil {
 			return fmt.Errorf("select resource :%w", err)
 		}
-		if len(selectedResources) == 0 {
+		if len(selected) == 0 {
 			color.Green.Println("resource not seleced")
 			return nil
 		}
-		if slices.Contains(selectedResources, color.Red.Sprintf("%s", "exit (cancel terraform plan)")) {
+		if slices.Contains(selected, color.Red.Sprintf("%s", "exit (cancel terraform plan)")) {
 			color.Green.Println("exit seleced")
 			return nil
 		}
-		buf := TargetCommand("destroy", SliceToString(DropAction(selectedResources)))
-		destroyCmd := exec.Command("sh", "-c", buf.String())
 		S.Restart()
-		destroyCmd.Stdout = os.Stdout
-		destroyCmd.Run()
+		buf := GenTargetCmd("destroy", SliceToString(DropAction(selected)))
+		TargetCmd(buf).Run()
 		S.Stop()
 		if IsYes(bufio.NewReader(os.Stdin)) {
 			return Confirm(buf).Run()
