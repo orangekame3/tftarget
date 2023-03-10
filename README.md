@@ -9,7 +9,6 @@ A Terraform plan/apply target tool
 ## Features
 You can interactivity select resource to plan/appply with target option. 
 
-
 ## tftarget plan
 ![tftarget-plan](./capture/tftarget-plan.gif)
 
