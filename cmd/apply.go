@@ -20,6 +20,9 @@ var applyCmd = &cobra.Command{
 	Short: "Terraform apply, interactively select resource to apply with target option",
 	Long:  "Terraform apply, interactively select resource to apply with target option",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		S.Suffix = " loading ..."
+		S.Color("green")
+		S.Start()
 		options, err := ExecutePlan("")
 		if err != nil && !IsNotFound(err) {
 			return fmt.Errorf("plan :%w", err)

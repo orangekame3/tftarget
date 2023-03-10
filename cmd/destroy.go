@@ -20,6 +20,9 @@ var destroyCmd = &cobra.Command{
 	Short: "Terraform destroy, interactively select resource to destroy with target option",
 	Long:  "Terraform destroy, interactively select resource to destroy with target option",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		S.Suffix = " loading ..."
+		S.Color("green")
+		S.Start()
 		options, err := ExecutePlan("-destroy")
 		if err != nil && !IsNotFound(err) {
 			return fmt.Errorf("plan :%w", err)

@@ -26,9 +26,6 @@ var S = spinner.New(spinner.CharSets[14], 100*time.Millisecond)
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	S.Suffix = " loading ..."
-	S.Color("green")
-	S.Start()
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
