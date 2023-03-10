@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -23,8 +22,8 @@ import (
 // destroyCmd represents the destroy command
 var destroyCmd = &cobra.Command{
 	Use:   "destroy",
-	Short: "Terraform apply, interactively select resource to apply with target option",
-	Long:  "ATerraform apply, interactively select resource to apply with target option",
+	Short: "Terraform destroy, interactively select resource to destroy with target option",
+	Long:  "Terraform destroy, interactively select resource to destroy with target option",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		out, err := exec.Command("terraform", "plan", "-destroy", "-no-color").CombinedOutput()
 		if err != nil {
@@ -44,12 +43,8 @@ var destroyCmd = &cobra.Command{
 		}
 		targets := SliceToString(DropAction(selectedResources))
 
-		var buffer bytes.Buffer
-		buffer.WriteString("terraform")
-		buffer.WriteString(" destroy")
-		buffer.WriteString(" -target=")
-		buffer.WriteString(targets)
-		destroyCmd := exec.Command("sh", "-c", buffer.String())
+		buf := TargetCommand("destroy", targets)
+		destroyCmd := exec.Command("sh", "-c", buf.String())
 		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
 		s.Color("green")
 		s.Start()
@@ -64,8 +59,8 @@ var destroyCmd = &cobra.Command{
 			return nil
 		}
 
-		buffer.WriteString(" -auto-approve")
-		confirm := exec.Command("sh", "-c", buffer.String())
+		buf.WriteString(" -auto-approve")
+		confirm := exec.Command("sh", "-c", buf.String())
 		confirm.Stdout = os.Stdout
 		confirm.Stderr = os.Stderr
 		return confirm.Run()

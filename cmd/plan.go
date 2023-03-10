@@ -4,17 +4,16 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"bytes"
-	"log"
+	"fmt"
 	"os"
 	"os/exec"
 	"time"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/briandowns/spinner"
 	"github.com/gookit/color"
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slices"
 )
 
 // planCmd represents the plan command
@@ -23,37 +22,43 @@ var planCmd = &cobra.Command{
 	Short: "Terraform plan, interactively select resource to plan with target option",
 	Long:  "Terraform plan, interactively select resource to plan with target option",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
+		s.Suffix = " loading ..."
+		s.Color("green")
+		s.Start()
 		out, err := exec.Command("terraform", "plan", "-no-color").CombinedOutput()
 		if err != nil {
 			color.Red.Println(string(out))
-			return err
+			return fmt.Errorf("plan :%w", err)
 		}
-		resources := ExtractResourceNames(out)
+		resources := make([]string, 0, 100)
+		resources = append(resources, color.Red.Sprintf("%s", "exit (cancel terraform plan)"))
+		resources = append(resources, ExtractResourceNames(out)...)
 		selectedResources := make([]string, 0)
+		s.Stop()
 		prompt := &survey.MultiSelect{
 			Message: "Select resources to target plan:",
 			Options: resources,
 		}
 		if err := survey.AskOne(prompt, &selectedResources, survey.WithPageSize(25)); err != nil {
-			if err == terminal.InterruptErr {
-				log.Fatal("interrupted")
-			}
+			return fmt.Errorf("select resource :%w", err)
+		}
+		if len(selectedResources) == 0 {
+			color.Green.Println("resource not seleced")
+			return nil
+		}
+		if slices.Contains(selectedResources, color.Red.Sprintf("%s", "exit (cancel terraform plan)")) {
+			color.Green.Println("exit seleced")
+			return nil
 		}
 		targets := SliceToString(DropAction(selectedResources))
-
-		var buffer bytes.Buffer
-		buffer.WriteString("terraform")
-		buffer.WriteString(" plan")
-		buffer.WriteString(" -target=")
-		buffer.WriteString(targets)
-		planCmd := exec.Command("sh", "-c", buffer.String())
-		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond) // Build our new spinner
-		s.Color("green")
-		s.Start()
+		buf := TargetCommand("plan", targets)
+		planCmd := exec.Command("sh", "-c", buf.String())
+		s.Restart()
 		planCmd.Stdout = os.Stdout
 		planCmd.Stderr = os.Stderr
 		if err := planCmd.Run(); err != nil {
-			return err
+			return fmt.Errorf("target plan :%w", err)
 		}
 		s.Stop()
 		return nil

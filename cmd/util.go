@@ -46,3 +46,12 @@ func SliceToString(slice []string) string {
 	buffer.WriteString(`}`)
 	return buffer.String()
 }
+
+func TargetCommand(cmd, target string) bytes.Buffer {
+	var buf bytes.Buffer
+	buf.WriteString("terraform ")
+	buf.WriteString(cmd)
+	buf.WriteString(" -target=")
+	buf.WriteString(target)
+	return buf
+}
