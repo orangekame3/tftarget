@@ -6,12 +6,14 @@ package cmd
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"regexp"
 	"strings"
 
 	"github.com/gookit/color"
+	"github.com/spf13/cobra"
 )
 
 func extractResource(input []byte) []string {
@@ -55,16 +57,19 @@ func slice2String(slice []string) string {
 	return buffer.String()
 }
 
-func genTargetCmd(cmd, target string) bytes.Buffer {
+func genTargetCmd(cmd *cobra.Command, action, target string) bytes.Buffer {
 	var buf bytes.Buffer
 	buf.WriteString("terraform ")
-	buf.WriteString(cmd)
+	buf.WriteString(action)
 	buf.WriteString(" -target=")
 	buf.WriteString(target)
+	p, _ := cmd.Flags().GetInt("parallel")
+	buf.WriteString(fmt.Sprintf(" --parallelism=%d", p))
 	return buf
 }
 
 func isYes(reader *bufio.Reader) bool {
+	color.Red.Print("Enter a value: ")
 	text, _ := reader.ReadString('\n')
 	return strings.TrimSpace(text) == "yes"
 }
@@ -77,11 +82,13 @@ func confirm(buf bytes.Buffer) *exec.Cmd {
 	return confirm
 }
 
-func executePlan(option string) ([]string, error) {
-	planCmd := exec.Command("terraform", "plan", "-no-color")
+func executePlan(cmd *cobra.Command, option string) ([]string, error) {
+	p, _ := cmd.Flags().GetInt("parallel")
+	planCmd := exec.Command("terraform", "plan", "-no-color", fmt.Sprintf("--parallelism=%d", p))
 	if option != "" {
-		planCmd = exec.Command("terraform", "plan", option, "-no-color")
+		planCmd = exec.Command("terraform", "plan", option, "-no-color", fmt.Sprintf("--parallelism=%d", p))
 	}
+
 	out, err := planCmd.CombinedOutput()
 	if err != nil {
 		color.Red.Println(string(out))

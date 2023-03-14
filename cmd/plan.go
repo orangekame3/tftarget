@@ -19,7 +19,7 @@ var planCmd = &cobra.Command{
 	Long:  "Terraform plan, interactively select resource to plan with target option",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		s.Start()
-		options, err := executePlan("")
+		options, err := executePlan(cmd, "")
 		if err != nil && !IsNotFound(err) {
 			return fmt.Errorf("plan :%w", err)
 		}
@@ -29,7 +29,8 @@ var planCmd = &cobra.Command{
 		s.Stop()
 
 		selected := make([]string, 0, 100)
-		if err := survey.AskOne(&survey.MultiSelect{Message: "Select resources to target destroy:", Options: options}, &selected, survey.WithPageSize(25)); err != nil {
+		items, _ := cmd.Flags().GetInt("items")
+		if err := survey.AskOne(&survey.MultiSelect{Message: "Select resources to target destroy:", Options: options}, &selected, survey.WithPageSize(items)); err != nil {
 			return fmt.Errorf("select resource :%w", err)
 		}
 		if len(selected) == 0 {
@@ -41,7 +42,7 @@ var planCmd = &cobra.Command{
 			return nil
 		}
 		s.Restart()
-		if err := targetCmd(genTargetCmd("plan", slice2String(dropAction(selected)))).Run(); err != nil {
+		if err := targetCmd(genTargetCmd(cmd, "plan", slice2String(dropAction(selected)))).Run(); err != nil {
 			return err
 		}
 		s.Stop()
@@ -51,4 +52,6 @@ var planCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(planCmd)
+	planCmd.Flags().IntP("parallel", "p", 10, "Limit the number of concurrent operations as Terraform walks the graph. Defaults to 10.")
+	planCmd.Flags().IntP("items", "i", 25, "Check box item size")
 }

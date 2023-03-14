@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/spf13/cobra"
 )
 
 func Test_extractResource(t *testing.T) {
@@ -176,33 +177,37 @@ func Test_slice2String(t *testing.T) {
 
 func Test_genTargetCmd(t *testing.T) {
 	tests := []struct {
-		name  string
-		cmd   string
-		input string
-		want  string
+		name   string
+		action string
+		input  string
+		want   string
+		cmd    *cobra.Command
 	}{
 		{
-			name:  "plan -target",
-			cmd:   "plan",
-			input: "{aws_iam_role_policy_attachment.local_poilcy_attachment,aws_lambda_function.local_lambda,aws_iam_policy.local_policy,aws_lambda_event_source_mapping.local_mapping}",
-			want:  "terraform plan -target={aws_iam_role_policy_attachment.local_poilcy_attachment,aws_lambda_function.local_lambda,aws_iam_policy.local_policy,aws_lambda_event_source_mapping.local_mapping}",
+			name:   "plan -target",
+			cmd:    planCmd,
+			action: "plan",
+			input:  "{aws_iam_role_policy_attachment.local_poilcy_attachment,aws_lambda_function.local_lambda,aws_iam_policy.local_policy,aws_lambda_event_source_mapping.local_mapping}",
+			want:   "terraform plan -target={aws_iam_role_policy_attachment.local_poilcy_attachment,aws_lambda_function.local_lambda,aws_iam_policy.local_policy,aws_lambda_event_source_mapping.local_mapping} --parallelism=10",
 		},
 		{
-			name:  "apply -target",
-			cmd:   "apply",
-			input: "{aws_iam_role_policy_attachment.local_poilcy_attachment,aws_lambda_function.local_lambda,aws_iam_policy.local_policy,aws_lambda_event_source_mapping.local_mapping}",
-			want:  "terraform apply -target={aws_iam_role_policy_attachment.local_poilcy_attachment,aws_lambda_function.local_lambda,aws_iam_policy.local_policy,aws_lambda_event_source_mapping.local_mapping}",
+			name:   "apply -target",
+			cmd:    applyCmd,
+			action: "apply",
+			input:  "{aws_iam_role_policy_attachment.local_poilcy_attachment,aws_lambda_function.local_lambda,aws_iam_policy.local_policy,aws_lambda_event_source_mapping.local_mapping}",
+			want:   "terraform apply -target={aws_iam_role_policy_attachment.local_poilcy_attachment,aws_lambda_function.local_lambda,aws_iam_policy.local_policy,aws_lambda_event_source_mapping.local_mapping} --parallelism=10",
 		},
 		{
-			name:  "destroy -target",
-			cmd:   "destroy",
-			input: "{aws_iam_role_policy_attachment.local_poilcy_attachment,aws_lambda_function.local_lambda,aws_iam_policy.local_policy,aws_lambda_event_source_mapping.local_mapping}",
-			want:  "terraform destroy -target={aws_iam_role_policy_attachment.local_poilcy_attachment,aws_lambda_function.local_lambda,aws_iam_policy.local_policy,aws_lambda_event_source_mapping.local_mapping}",
+			name:   "destroy -target",
+			cmd:    destroyCmd,
+			action: "destroy",
+			input:  "{aws_iam_role_policy_attachment.local_poilcy_attachment,aws_lambda_function.local_lambda,aws_iam_policy.local_policy,aws_lambda_event_source_mapping.local_mapping}",
+			want:   "terraform destroy -target={aws_iam_role_policy_attachment.local_poilcy_attachment,aws_lambda_function.local_lambda,aws_iam_policy.local_policy,aws_lambda_event_source_mapping.local_mapping} --parallelism=10",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := genTargetCmd(tt.cmd, tt.input)
+			got := genTargetCmd(tt.cmd, tt.action, tt.input)
 			if diff := cmp.Diff(got.String(), tt.want); diff != "" {
 				t.Errorf("genTargetCmd (-got +want):%s", diff)
 			}

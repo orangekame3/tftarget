@@ -21,7 +21,7 @@ var applyCmd = &cobra.Command{
 	Long:  "Terraform apply, interactively select resource to apply with target option",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		s.Start()
-		options, err := executePlan("")
+		options, err := executePlan(cmd, "")
 		if err != nil && !IsNotFound(err) {
 			return fmt.Errorf("plan :%w", err)
 		}
@@ -31,7 +31,8 @@ var applyCmd = &cobra.Command{
 		s.Stop()
 
 		selected := make([]string, 0, 100)
-		if err := survey.AskOne(&survey.MultiSelect{Message: "Select resources to target destroy:", Options: options}, &selected, survey.WithPageSize(25)); err != nil {
+		items, _ := cmd.Flags().GetInt("items")
+		if err := survey.AskOne(&survey.MultiSelect{Message: "Select resources to target destroy:", Options: options}, &selected, survey.WithPageSize(items)); err != nil {
 			return fmt.Errorf("select resource :%w", err)
 		}
 		if len(selected) == 0 {
@@ -43,7 +44,7 @@ var applyCmd = &cobra.Command{
 			return nil
 		}
 		s.Restart()
-		buf := genTargetCmd("apply", slice2String(dropAction(selected)))
+		buf := genTargetCmd(cmd, "apply", slice2String(dropAction(selected)))
 		targetCmd(buf).Run()
 		s.Stop()
 		if isYes(bufio.NewReader(os.Stdin)) {
@@ -56,4 +57,6 @@ var applyCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(applyCmd)
+	applyCmd.Flags().IntP("parallel", "p", 10, "Limit the number of concurrent operations as Terraform walks the graph. Defaults to 10.")
+	applyCmd.Flags().IntP("items", "i", 25, "Check box item size")
 }
