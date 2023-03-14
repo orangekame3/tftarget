@@ -53,7 +53,7 @@ Once you have reached this point, the preparation is complete.
 
 ## Install
 
-### GO
+### Go
 
 ```shell
 $ go install github.com/orangekame3/tftarget@latest
