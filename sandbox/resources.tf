@@ -9,7 +9,7 @@ resource "aws_lambda_event_source_mapping" "local_mapping" {
   function_name          = aws_lambda_function.local_lambda.arn
   starting_position      = "LATEST"
   maximum_retry_attempts = 1
-  batch_size             = 100
+  batch_size             = 130
 }
 
 resource "aws_lambda_function" "local_lambda" {

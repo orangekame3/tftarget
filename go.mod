@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6
 	github.com/briandowns/spinner v1.23.0
+	github.com/google/go-cmp v0.5.8
 	github.com/gookit/color v1.5.2
 	github.com/spf13/cobra v1.6.1
 	golang.org/x/exp v0.0.0-20230307190834-24139beb5833

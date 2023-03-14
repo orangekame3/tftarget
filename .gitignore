@@ -16,3 +16,5 @@ sandbox/volume/
 
 *.zip
 dist/
+*.html
+c.out

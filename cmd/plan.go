@@ -18,17 +18,15 @@ var planCmd = &cobra.Command{
 	Short: "Terraform plan, interactively select resource to plan with target option",
 	Long:  "Terraform plan, interactively select resource to plan with target option",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		S.Suffix = " loading ..."
-		S.Color("green")
-		S.Start()
-		options, err := ExecutePlan("")
+		s.Start()
+		options, err := executePlan("")
 		if err != nil && !IsNotFound(err) {
 			return fmt.Errorf("plan :%w", err)
 		}
 		if IsNotFound(err) {
 			return nil
 		}
-		S.Stop()
+		s.Stop()
 
 		selected := make([]string, 0, 100)
 		if err := survey.AskOne(&survey.MultiSelect{Message: "Select resources to target destroy:", Options: options}, &selected, survey.WithPageSize(25)); err != nil {
@@ -42,11 +40,11 @@ var planCmd = &cobra.Command{
 			color.Green.Println("exit seleced")
 			return nil
 		}
-		S.Restart()
-		if err := TargetCmd(GenTargetCmd("plan", SliceToString(DropAction(selected)))).Run(); err != nil {
+		s.Restart()
+		if err := targetCmd(genTargetCmd("plan", slice2String(dropAction(selected)))).Run(); err != nil {
 			return err
 		}
-		S.Stop()
+		s.Stop()
 		return nil
 	},
 }

@@ -14,3 +14,10 @@ install:
 
 localstack:
 	cd sandbox && docker compose -f compose.yml up -d localstack
+
+test:
+	cd cmd && go test
+
+coverage:
+	cd cmd && go test -covermode=count -coverprofile=c.out && go tool cover -html=c.out -o coverage.html
+

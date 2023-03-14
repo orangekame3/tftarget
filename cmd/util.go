@@ -14,7 +14,7 @@ import (
 	"github.com/gookit/color"
 )
 
-func ExtractResourceNames(input []byte) []string {
+func extractResource(input []byte) []string {
 	re := regexp.MustCompile(`#\s([^(\n]*)(\n|$)`)
 
 	matches := re.FindAllSubmatch(input, -1)
@@ -26,7 +26,7 @@ func ExtractResourceNames(input []byte) []string {
 
 	return results
 }
-func DropAction(strs []string) []string {
+func dropAction(strs []string) []string {
 	var result []string
 	for _, s := range strs {
 		s = strings.TrimSpace(s)
@@ -38,7 +38,7 @@ func DropAction(strs []string) []string {
 	return result
 }
 
-func SliceToString(slice []string) string {
+func slice2String(slice []string) string {
 	var buffer bytes.Buffer
 	if len(slice) == 1 {
 		buffer.WriteString(slice[0])
@@ -55,7 +55,7 @@ func SliceToString(slice []string) string {
 	return buffer.String()
 }
 
-func GenTargetCmd(cmd, target string) bytes.Buffer {
+func genTargetCmd(cmd, target string) bytes.Buffer {
 	var buf bytes.Buffer
 	buf.WriteString("terraform ")
 	buf.WriteString(cmd)
@@ -64,12 +64,12 @@ func GenTargetCmd(cmd, target string) bytes.Buffer {
 	return buf
 }
 
-func IsYes(reader *bufio.Reader) bool {
+func isYes(reader *bufio.Reader) bool {
 	text, _ := reader.ReadString('\n')
 	return strings.TrimSpace(text) == "yes"
 }
 
-func Confirm(buf bytes.Buffer) *exec.Cmd {
+func confirm(buf bytes.Buffer) *exec.Cmd {
 	buf.WriteString(" -auto-approve")
 	confirm := exec.Command("sh", "-c", buf.String())
 	confirm.Stdout = os.Stdout
@@ -77,7 +77,7 @@ func Confirm(buf bytes.Buffer) *exec.Cmd {
 	return confirm
 }
 
-func ExecutePlan(option string) ([]string, error) {
+func executePlan(option string) ([]string, error) {
 	planCmd := exec.Command("terraform", "plan", "-no-color")
 	if option != "" {
 		planCmd = exec.Command("terraform", "plan", option, "-no-color")
@@ -87,7 +87,7 @@ func ExecutePlan(option string) ([]string, error) {
 		color.Red.Println(string(out))
 		return nil, err
 	}
-	resources := ExtractResourceNames(out)
+	resources := extractResource(out)
 	if len(resources) == 0 {
 		color.Green.Println(string(out))
 		return nil, ErrNotFound
@@ -97,7 +97,7 @@ func ExecutePlan(option string) ([]string, error) {
 	return append(options, resources...), nil
 }
 
-func TargetCmd(buf bytes.Buffer) *exec.Cmd {
+func targetCmd(buf bytes.Buffer) *exec.Cmd {
 	cmd := exec.Command("sh", "-c", buf.String())
 	cmd.Stdout = os.Stdout
 	return cmd
