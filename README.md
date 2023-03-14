@@ -4,7 +4,7 @@
 [![release](https://github.com/orangekame3/tftarget/actions/workflows/release.yml/badge.svg)](https://github.com/orangekame3/tftarget/actions/workflows/release.yml)
 [![tagpr](https://github.com/orangekame3/tftarget/actions/workflows/tagpr.yml/badge.svg)](https://github.com/orangekame3/tftarget/actions/workflows/tagpr.yml)
 
-A Terraform plan/apply target tool
+A Terraform (plan|apply|destroy) target tool
 
 ## Features
 You can interactivity select resource to plan/appply with target option. 
@@ -14,6 +14,9 @@ You can interactivity select resource to plan/appply with target option.
 
 ## tftarget apply
 ![tftarget-apply](./capture/tftarget-apply.gif)
+
+## tftarget destroy
+![tftarget-destroy](./capture/tftarget-destroy.gif)
 
 ## Requirements
 The tftarget invokes the Terraform command, so Terraform must be installed on the local environment.
