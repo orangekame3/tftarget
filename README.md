@@ -7,7 +7,7 @@
 A Terraform (plan|apply|destroy) target tool
 
 ## Features
-You can interactivity select resource to plan/appply with target option. 
+You can interactivity select resource to (plan|apply|destroy) with target option. 
 
 ## tftarget plan
 ![tftarget-plan](./capture/tftarget-plan.gif)
@@ -69,7 +69,7 @@ https://github.com/orangekame3/tftarget/releases
 
 ```shell
 $ tftarget --help
-tftarget is a CLI tool for Terraform plan/apply with target option.
+tftarget is a CLI library for Terraform plan/apply with target option.
 You can interactivity select resource to plan/appply with target option.
 
 Usage:
@@ -78,6 +78,7 @@ Usage:
 Available Commands:
   apply       Terraform apply, interactively select resource to apply with target option
   completion  Generate the autocompletion script for the specified shell
+  destroy     Terraform destroy, interactively select resource to destroy with target option
   help        Help about any command
   plan        Terraform plan, interactively select resource to plan with target option
 
